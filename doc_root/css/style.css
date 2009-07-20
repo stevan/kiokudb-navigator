@@ -1,65 +1,131 @@
 
 body {
     font-family : sans-serif;
-    margin      : 0px;
 }
 
-.navigator_container {
-    margin : 10px;    
-    border        : 2px solid #336699;       
+
+.window {
+    border  : 1px solid black;
+    padding : 2px;
 }
 
-.navigator_handle {
-    background    : #6699AA;
-    border-bottom : 2px solid #336699; 
-    color         : white;
-    padding-left  : 5px;
-    font-weight   : bold;    
-    cursor: hand; cursor: pointer;    
+.window .handle {
+    background : #666666;
+    color      : #ffffff;
+    text-align : right;
+    padding    : 2px;
 }
 
-.navigator_handle a {
-    color           : white;
+.window .handle a {
+    color : #ffffff;
     text-decoration : none;
 }
 
-.object_container {
-    margin-left  : 15px;
-    margin-right : 15px;    
-    padding-left : 0px;
+.window .body {
+    padding : 2px;
 }
 
-ul {
-    list-style : none;
-    border     : 1px dotted grey;    
+.window .body .object {
+    border  : 1px dotted black;
+    padding : 2px;
 }
 
-li {
-    border: 1px solid grey;
+.window .body .object .header {
+    background : white;
+    padding    : 2px;
 }
 
-.label {
+.window .body .object .header .__CLASS__ {
+    font-weight : bold;
+    font-size   : 1.5em;
+}
+
+.window .body .object .header .id {
+    font-style : italic;
+    font-size  : 0.8em;
+}
+
+.window .body .object .data {
+    padding    : 5px;
+    background : #dddddd;
+    border     : 1px dotted black;
+}
+
+.window .body .object .data ul {
+    list-style   : none;
+    padding-left : 5px;
+}
+
+.window .body .object .data li {
+    clear: both;
+}
+
+.window .body .object .data li .label {
+    font-style   : italic;
     float        : left;
-    width        : 150px;
-    padding-left : 2px;
+    width        : 250px;
+    color        : #666666;
 }
 
-.collection {
-}
-
-.value a {
-    text-decoration : none;
-}
-
-.value {
+.window .body .object .data li .value {
 
 }
 
-.value ul {
-    clear : both;
+.window .body .object .data li .value a {
+    color      : #336699;
+    font-size  : 0.8em;
 }
 
-.hidden {    
+/* sub objects */
+
+.window .body .sub_object {
+    margin-left   : 30px;
+    margin-top    : 5px;
+    margin-bottom : 10px;
+}
+
+.window .body .sub_object .header {
+    background : white;
+    padding    : 2px;
+}
+
+.window .body .sub_object .header .__CLASS__ {
+    font-weight : bold;
+    font-size   : 1.2em;
+}
+
+.window .body .sub_object .header .id {
+    font-style : italic;
+    font-size  : 0.8em;
+}
+
+.window .body .sub_object .data {
+    padding    : 5px;
+    background : #dddddd;
+    border     : 1px dotted black;
+}
+
+.window .body .sub_object .data ul {
+    list-style   : none;
+    padding-left : 5px;
+}
+
+.window .body .sub_object .data li {
+}
+
+.window .body .sub_object .data li .label {
+    font-style   : italic;
+    float        : left;
+    width        : 250px;
+    color        : #666666;
+}
+
+.window .body .sub_object .data li .value {
+
+}
+
+
+.hidden {
     display : none;
 }
 
@@ -81,11 +147,11 @@ li {
 .widget_control {
     background    : #6699AA;
     border-left   : 2px solid #336699;
-    border-right  : 2px solid #336699;    
-    border-bottom : 2px solid #336699;    
+    border-right  : 2px solid #336699;
+    border-bottom : 2px solid #336699;
     color         : white;
     padding-left  : 5px;
-    font-weight   : bold;    
+    font-weight   : bold;
     cursor: hand; cursor: pointer;
 }
 

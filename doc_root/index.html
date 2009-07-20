@@ -35,13 +35,13 @@ $(document).ready(function () {
 });
 
 
-function create_object_link (ref_id, label) {
+function create_object_link (ref_id) {
     if (ref_id.indexOf('.data') != -1) {
         ref_id = ref_id.substring(0, ref_id.indexOf('.data'));
     }
     return '<a id="' + ref_id + '" class="loader" href="javascript:void(0)">'
-         + label
-         + '</a><ul class="hidden"></ul>';
+         + ref_id
+         + '</a><div class="sub_object hidden"></div>';
 }
 
 function is_ref_id (id) {
@@ -51,96 +51,135 @@ function is_ref_id (id) {
     return false;
 }
 
-function create_object_repr (obj) {
+// This is the entry point for the
+// recursive object representation
+// functions
+
+function create_entity_repr (obj) {
     var out = '';
-    for (var prop in obj) {
-        if (prop == '$ref') {
-            out += create_object_link( obj[prop], '[ + ]' );
+    if (obj.constructor == Array) {
+        // this will handle KiokuDB::Set objects
+        for (var i = 0; i < obj.length; i++) {
+            out += '<li>' + create_repr( obj[i] ) + '</li>';
         }
-        else {
+    }
+    else {
+        // this should handle everything else ...
+        for (var prop in obj) {
             out += '<li><div class="label">' + prop + '</div><div class="value">';
-            switch (obj[prop].constructor) {
-                case Object:
-                    out += '<ul>' + create_object_repr( obj[prop] ) + '</ul>';
-                    break;
-                case Array:
-                    out += '<ul class="collection">';
-                    for (var i = 0; i < obj[prop].length; i++) {
-                        switch (obj[prop][i].constructor) {
-                            case Object:
-                                out += '<li><div class="value">'
-                                if (obj[prop][i]['$ref'] == undefined) {
-                                    out += '<ul>' + create_object_repr( obj[prop][i] ) + '</ul>';
-                                }
-                                else {
-                                    out += create_object_link( obj[prop][i]['$ref'], '[ ' + i + ' ]' );
-                                }
-                                out += '</div></li>';
-                                break;
-                            case String:
-                                if (is_ref_id(obj[prop][i])) {
-                                    out += "<div>" + create_object_link( obj[prop][i], '[ ' + i + ' ]' ) + "</div>";
-                                }
-                                else {
-                                    out += "<div>" + obj[prop][i] + "</div>";
-                                }
-                                break;
-                        }
-                    }
-                    out += '</ul>';
-                    break;
-                default:
-                    if (prop == 'id') {
-                        out += obj[prop]
-                            + '&nbsp;<a href="#" onclick="load_object( undefined, \''
-                            + obj[prop]
-                            + '\')">[ ⇗ ]</a>';
-                    }
-                    else {
-                        out += obj[prop];
-                    }
-            }
+            out += create_repr(obj[prop]);
             out += "</div></li>"
         }
     }
     return out;
 }
 
+function create_repr (x) {
+    var out = '';
+    switch (x.constructor) {
+        case Object:
+            out += create_object_repr(x);
+            break;
+        case Array:
+            out += create_array_repr(x);
+            break;
+        case String:
+            // if we find a string which
+            // looks a lot like a ref then
+            // we make an assumption and
+            // just make it a link
+            if (is_ref_id(x)) {
+                out += create_object_link( x );
+            }
+            else {
+                out += x;
+            }
+            break;
+        default:
+            out += x;
+    }
+    return out;
+}
+
+function create_object_repr (obj) {
+    if (obj['$ref']) {
+        // we are assuming here that
+        // an object with a $ref key
+        // will be a jspon object and
+        // so be nothing more then a ref
+        return create_object_link( obj['$ref'] )
+    }
+    else {
+        var out = '<ul>';
+        for (var prop in obj) {
+            out += '<li>' + prop + " => " + create_repr( obj[prop] ) + '</li>';
+        }
+        out += '</ul>';
+        return out;
+    }
+}
+
+function create_array_repr (arr) {
+    var out = '<ul>';
+    for (var i = 0; i < arr.length; i++) {
+        out += '<li>' + create_repr( arr[i] ) + '</li>';
+    }
+    out += '</ul>';
+    return out;
+}
+
 function load_object (container, id) {
 
-    if (container == undefined) {
-        var holder = $(
-            '<div class="navigator_container">'
-            + '<div class="navigator_handle">'
-            + '<a href="#" onclick="$(this).parent().parent().remove()">[ x ]</a>&nbsp;'
-            + (id == '' ? 'root' : id)
-            + '</div>'
-            + '<ul class="object_container" id="' + id + '"></ul>'
-            + '</div>'
-        );
-
-        $(document.body).append(holder);
-
-        $('.navigator_handle', holder).toggle(
-            function () { $('.object_container', $(this).parent()).hide() },
-            function () { $('.object_container', $(this).parent()).show() }
-        );
-
-        container = $('.object_container', holder);
-    }
-
     lookup(id, function (obj) {
-        $(container).html( create_object_repr( obj ) );
+
+        var object_container = (
+             '<div class="object">'
+            +    '<div class="header">'
+            +        '<div class="__CLASS__">' + obj['__CLASS__'] + '</div>'
+            +        '<div class="id">'  + (id == '' ? 'root' : id) +  '</div>'
+            +    '</div>'
+            +    '<div class="data">'
+            +        '<ul id="' + id + '"></ul>'
+            +    '</div>'
+            +'</div>'
+        );
+
+        if (container == undefined) {
+            container = $(
+                '<div class="window">'
+                +     '<div class="handle">'
+                +         '<a class="navigator_handle" href="#">[ _ ]</a>'
+                +         '&nbsp;'
+                +         '<a href="#" onclick="$(this).parent().parent().remove()">[ x ]</a>'
+                +     '</div>'
+                +     '<div class="body">'
+                +        object_container
+                +     '</div>'
+                + '</div>'
+            );
+            $(document.body).append(container);
+        }
+        else {
+            container.html(object_container);
+        }
+
+        $('.navigator_handle', container).toggle(
+            function () { $('.data', $(this).parent().parent()).hide() },
+            function () { $('.data', $(this).parent().parent()).show() }
+        );
+
+        $('.data ul', container).html( create_entity_repr( obj['data'] ) );
 
         $('.loader', container).click(function () {
             var id = $(this).attr('id');
-            load_object( $(this).siblings('ul'), id );
-            $(this).siblings('ul').removeClass('hidden');
+            load_object( $(this).siblings('.sub_object'), id );
+            $(this).siblings('.sub_object').removeClass('hidden');
             $(this).unbind('click');
             $(this).click(function () {
-                $(this).siblings('ul').toggle()
+                $(this).siblings('.sub_object').toggle()
             });
         })
+
     });
 }
 
