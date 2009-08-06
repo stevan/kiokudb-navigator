@@ -150,30 +150,4 @@ table.hash tbody tr td.hash_value {
     display : none;
 }
 
-.widget_label {
-    font-size : 10pt;
-    color     : #666666;
-}
-
-.widget_container {
-    top      : 0px;
-    left     : 0px;
-    border   : 2px solid #333333;
-}
-
-.widget_container {
-    padding  : 20px;
-}
-
-.widget_control {
-    background    : #cccccc;
-    border-left   : 2px solid #333333;
-    border-right  : 2px solid #333333;
-    border-bottom : 2px solid #333333;
-    color         : white;
-    padding-left  : 5px;
-    font-weight   : bold;
-    cursor: hand; cursor: pointer;
-}
-
 
