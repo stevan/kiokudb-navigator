@@ -2,8 +2,6 @@ package KiokuDB::Cmd::Command::Nav;
 use Moose;
 
 use KiokuDB::Navigator;
-use Path::Class;
-use Class::Inspector;
 
 our $VERSION   = '0.01';
 our $AUTHORITY = 'cpan:STEVAN';
@@ -15,14 +13,9 @@ augment 'run' => sub {
     my $self = shift;
 
     KiokuDB::Navigator->new(
-        db       => KiokuDB->new( backend => $self->backend ),
-        doc_root => Path::Class::File->new(
-                        Class::Inspector->loaded_filename( __PACKAGE__ )
-                    )->parent # Command
-                     ->parent # Cmd
-                     ->parent # KiokuDB
-                     ->parent # lib
-                     ->parent->subdir('doc_root'),
+        db => KiokuDB->new(
+            backend => $self->backend
+        ),
     )->run;
 };
 
@@ -36,19 +29,21 @@ __END__
 
 =head1 NAME
 
-KiokuDB::Cmd::Command::Nav - A Moosey solution to this problem
+KiokuDB::Cmd::Command::Nav - KiokuDB::Cmd extension for KiokuDB::Navigator
 
 =head1 SYNOPSIS
 
-  use KiokuDB::Cmd::Command::Nav;
+  % kioku nav --dsn bdb:dir=root/db
 
 =head1 DESCRIPTION
+
+This is a KiokuDB::Cmd class to provide access to a KiokuDB::Navigator.
 
 =head1 METHODS
 
 =over 4
 
-=item B<>
+=item B<run>
 
 =back
 

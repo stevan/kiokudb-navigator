@@ -5,6 +5,9 @@ use MooseX::Types::Path::Class;
 our $VERSION   = '0.01';
 our $AUTHORITY = 'cpan:STEVAN';
 
+use Path::Class;
+use Class::Inspector;
+
 use JSORB;
 use JSORB::Dispatcher::Path;
 use JSORB::Server::Simple;
@@ -23,13 +26,14 @@ has 'doc_root' => (
     is       => 'ro',
     isa      => 'Path::Class::Dir',
     coerce   => 1,
-    required => 1,
-);
-
-has 'root_id' => (
-    is        => 'ro',
-    isa       => 'Str',
-    predicate => 'has_root_id',
+    lazy     => 1,
+    default  => sub {
+        Path::Class::File->new(
+            Class::Inspector->loaded_filename( __PACKAGE__ )
+        )->parent # KiokuDB
+         ->parent # lib
+         ->parent->subdir('doc_root'),
+    }
 );
 
 has 'jsorb_namespace' => (
@@ -61,8 +65,7 @@ has 'jsorb_namespace' => (
 
 sub _lookup {
     my $self = shift;
-    my $id   = shift || $self->root_id || die "No default root id assigned\n";
-
+    my $id   = shift;
     my $obj  = $self->db->lookup($id);
 
     (defined $obj)
@@ -111,19 +114,34 @@ __END__
 
 =head1 NAME
 
-KiokuDB::Navigator - A Moosey solution to this problem
+KiokuDB::Navigator - KiokuDB Database Navigator
 
-=head1 SYNOPSIS
+=head1 SYNOPSIS.
 
   use KiokuDB::Navigator;
 
+  my $dir = KiokuDB->connect( ... );
+
+  KiokuDB::Navigator->new( db => $dir )->run;
+
+  # or you can use the KiokuDB::Cmd extension
+
+  % kioku nav --dsn bdb:dir=root/db
+
 =head1 DESCRIPTION
+
+This is a KiokuDB database navigator and is meant to help
+you browse the structure of your KiokuDB object database.
+
+This is a very early version of this module, it still needs
+a lot of polishing and additional features, but so far it
+does a pretty good job. Try it and see.
 
 =head1 METHODS
 
 =over 4
 
-=item B<>
+=item B<run>
 
 =back
 

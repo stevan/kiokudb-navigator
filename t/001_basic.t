@@ -2,7 +2,6 @@
 
 use strict;
 use warnings;
-use FindBin;
 
 use Test::More 'no_plan';
 use Test::Exception;
@@ -61,8 +60,6 @@ use KiokuDB;
     has [ 'make', 'model', 'vin' ] => (is => 'rw');
 }
 
-my $root_id;
-
 my $db = KiokuDB->connect("hash");
 
 {
@@ -84,15 +81,15 @@ my $db = KiokuDB->connect("hash");
         Person->new(first_name => 'Magie', last_name => 'Simpson', age => 1,  %parents),
     );
 
-    ($root_id) = $db->txn_do(sub {
-        $db->store( $homer, $marge, @children, $minivan, $volvo );
+    $db->txn_do(sub {
+        $db->store(
+            Homer    => $homer,
+            Marge    => $marge,
+            The_Kids => \@children,
+            The_Cars => [ $minivan, $volvo ]
+        );
     });
 }
 
-my $n = KiokuDB::Navigator->new(
-    db       => $db,
-    doc_root => [ $FindBin::Bin, '..', 'doc_root' ],
-    root_id  => $root_id,
-);
+KiokuDB::Navigator->new( db => $db )->run;
 
-$n->run;
