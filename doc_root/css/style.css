@@ -5,6 +5,23 @@ body {
     font-size   : 0.9em;
 }
 
+.menu {
+    border-bottom : 1px solid black;
+    background    : #336699;
+    color         : white;
+}
+
+.menu .title_kioku {
+    font-family: arial black;
+}
+
+.menu .title {
+    font-size: 1.1em;
+}
+
+.menu .controls {
+    font-size : 0.9em;
+}
 
 .window {
     border  : 1px solid black;

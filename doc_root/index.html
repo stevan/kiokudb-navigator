@@ -202,13 +202,12 @@ function load_object (container, id) {
 </script>
 </head>
 <body>
-<table cellspacing="5" border="0" width="100%">
+<table class="menu" cellspacing="5" border="0" width="100%">
 <tr>
-<td width="33%">KiokuDB::Navigator</td>
-<td width="33%"><input type="text" id="lookup" size="36" />&nbsp;<input type="button" value="lookup" onclick="load_object( undefined, $('#lookup').val() )" /></td>
-<td width="33%" align="right"><input type="button" value="load root set" onclick="load_root_set(this)" /></td>
+<td class="title"><span class="title_kioku">KiokuDB</span>Navigator</td>
+<td class="controls" width="33%"><input type="text" id="lookup" size="36" />&nbsp;<input type="button" value="lookup" onclick="load_object( undefined, $('#lookup').val() )" /></td>
+<td class="controls" width="33%" align="right"><input type="button" value="load root set" onclick="load_root_set(this)" /></td>
 </tr>
 </table>
-<hr/>
 </body>
 </html>
