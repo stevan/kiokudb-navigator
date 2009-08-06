@@ -110,11 +110,15 @@ function create_object_repr (obj) {
         return create_object_link( obj['$ref'] )
     }
     else {
-        var out = '<ul>';
+        var out = '<table class="hash">';
         for (var prop in obj) {
-            out += '<li>' + prop + " => " + create_repr( obj[prop] ) + '</li>';
+            out += "<tr>"
+                 + "<td valign='top' class='hash_key'>" + prop + "</td>"
+                 + "<td valign='top' class='fat_comma'>=></td>"
+                 + "<td valign='top' class='hash_value'>" + create_repr( obj[prop] ) + "</td>"
+                 + "</tr>";
         }
-        out += '</ul>';
+        out += '</table>';
         return out;
     }
 }
@@ -135,7 +139,9 @@ function load_object (container, id) {
         var object_container = (
              '<div class="object">'
             +    '<div class="header">'
-            +        '<div class="__CLASS__">' + obj['__CLASS__'] + '</div>'
+            + (obj['__CLASS__'] == undefined
+                ? ('')
+                : ('<div class="__CLASS__">' + obj['__CLASS__'] + '</div>'))
             +        '<div class="id">'  + (id == '' ? 'root' : id) +  '</div>'
             +    '</div>'
             +    '<div class="data">'

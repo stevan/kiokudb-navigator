@@ -1,12 +1,15 @@
 
 body {
     font-family : sans-serif;
+    margin      : 0px;
+    font-size   : 0.9em;
 }
 
 
 .window {
     border  : 1px solid black;
     padding : 2px;
+    margin  : 5px;
 }
 
 .window .handle {
@@ -68,12 +71,30 @@ body {
 }
 
 .window .body .object .data li .value {
-
+    padding-top     : 2px;
+    padding-bottom  : 2px;
+    border-bottom   : 1px dotted #aaaaaa;
 }
 
 .window .body .object .data li .value a {
     color      : #336699;
     font-size  : 0.8em;
+}
+
+table.hash {
+    font-size: 0.9em;
+}
+
+table.hash tbody tr td.hash_key {
+    color : #666666;
+}
+
+table.hash tbody tr td.fat_comma {
+    color : #666666;
+}
+
+table.hash tbody tr td.hash_value {
+
 }
 
 /* sub objects */
@@ -137,7 +158,7 @@ body {
 .widget_container {
     top      : 0px;
     left     : 0px;
-    border   : 2px solid #336699;
+    border   : 2px solid #333333;
 }
 
 .widget_container {
@@ -145,10 +166,10 @@ body {
 }
 
 .widget_control {
-    background    : #6699AA;
-    border-left   : 2px solid #336699;
-    border-right  : 2px solid #336699;
-    border-bottom : 2px solid #336699;
+    background    : #cccccc;
+    border-left   : 2px solid #333333;
+    border-right  : 2px solid #333333;
+    border-bottom : 2px solid #333333;
     color         : white;
     padding-left  : 5px;
     font-weight   : bold;
