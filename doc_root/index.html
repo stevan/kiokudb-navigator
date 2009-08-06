@@ -32,6 +32,8 @@ function load_root_set (e) {
     );
 }
 
+// utils ...
+
 function load_object_from_root_set () {
     var select = $('#root_set_select')[0];
     load_object(undefined, select.options[ select.selectedIndex ].value);
@@ -126,6 +128,11 @@ function create_object_repr (obj) {
 }
 
 function create_array_repr (arr) {
+    // IMPROVE ME:
+    // This could be made nicer,
+    // perhaps with scrolling if
+    // it is too long.
+    // - SL
     var out = '<ul>';
     for (var i = 0; i < arr.length; i++) {
         out += '<li>' + create_repr( arr[i] ) + '</li>';
