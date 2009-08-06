@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use FindBin;
 
-use Test::More no_plan => 1;
+use Test::More 'no_plan';
 use Test::Exception;
 
 BEGIN {
@@ -63,8 +63,9 @@ use KiokuDB;
 
 my $root_id;
 
+my $db = KiokuDB->connect("hash");
+
 {
-    my $db = KiokuDB->connect("bdb:dir=data", create => 1);
 
     my $s = $db->new_scope;
 
@@ -89,7 +90,7 @@ my $root_id;
 }
 
 my $n = KiokuDB::Navigator->new(
-    db       => KiokuDB->connect("bdb:dir=data"),
+    db       => $db,
     doc_root => [ $FindBin::Bin, '..', 'doc_root' ],
     root_id  => $root_id,
 );

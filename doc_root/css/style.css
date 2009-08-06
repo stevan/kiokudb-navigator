@@ -82,7 +82,9 @@ body {
 }
 
 table.hash {
-    font-size: 0.9em;
+    font-size  : 0.9em;
+    margin     : 1px;
+    background : #eeeeee;
 }
 
 table.hash tbody tr td.hash_key {

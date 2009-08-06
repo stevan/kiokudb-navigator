@@ -2,7 +2,6 @@
 <head>
 <link rel="stylesheet" href="css/style.css" type="text/css" />
 <script language="javascript" src="js/jquery-1.2.6.js"></script>
-<script language="javascript" src="js/jquery.hotkeys-0.7.9.js"></script>
 <script language="javascript" src="js/json2.js"></script>
 <script language="javascript" src="js/JSORB.js"></script>
 <script language="javascript">
@@ -17,6 +16,25 @@ function lookup (id, callback) {
         { method : 'lookup', params : [ id ] },
         callback
     );
+}
+
+function load_root_set (e) {
+    c.call(
+        { method : 'root_set' },
+        function ( arr ) {
+            var o = '<select id="root_set_select">';
+            for (var i = 0; i < arr.length; i++) {
+                o += '<option value="' + arr[i] + '">' + arr[i] + '</option>';
+            }
+            o+= '</select>&nbsp;<input type="button" value="load" onclick="load_object_from_root_set()">';
+            $(e).parent().html( o );
+        }
+    );
+}
+
+function load_object_from_root_set () {
+    var select = $('#root_set_select')[0];
+    load_object(undefined, select.options[ select.selectedIndex ].value);
 }
 
 function create_object_link (ref_id) {
@@ -174,17 +192,16 @@ function load_object (container, id) {
 }
 
 
-// $(document).bind('keydown', 'up',   function(){ $('.window .body .data').hide() });
-// $(document).bind('keydown', 'down', function(){ $('.window .body .data').show() });
-
 </script>
 </head>
 <body>
-<br/>
-<blockquote>
-    <div>Lookup By ID</div>
-    <input type="text" id="lookup" size="36" />
-    <input type="button" value="lookup" onclick="load_object( undefined, $('#lookup').val() )" />
-</blockquote>
+<table cellspacing="5" border="0" width="100%">
+<tr>
+<td width="33%">KiokuDB::Navigator</td>
+<td width="33%"><input type="text" id="lookup" size="36" />&nbsp;<input type="button" value="lookup" onclick="load_object( undefined, $('#lookup').val() )" /></td>
+<td width="33%" align="right"><input type="button" value="load root set" onclick="load_root_set(this)" /></td>
+</tr>
+</table>
+<hr/>
 </body>
 </html>

@@ -13,29 +13,28 @@ use JSORB::Server::Traits::WithStaticFiles;
 use KiokuDB;
 use KiokuDB::Backend::Serialize::JSPON::Collapser;
 
-with 'MooseX::Getopt';
-
 has 'db' => (
     is       => 'ro',
-    isa      => 'KiokuDB',   
+    isa      => 'KiokuDB',
     required => 1,
 );
 
 has 'doc_root' => (
     is       => 'ro',
-    isa      => 'Path::Class::Dir',   
+    isa      => 'Path::Class::Dir',
     coerce   => 1,
     required => 1,
 );
 
 has 'root_id' => (
-    is      => 'ro',
-    isa     => 'Str',   
+    is        => 'ro',
+    isa       => 'Str',
+    predicate => 'has_root_id',
 );
 
 has 'jsorb_namespace' => (
     is      => 'ro',
-    isa     => 'JSORB::Namespace',   
+    isa     => 'JSORB::Namespace',
     default => sub {
         return JSORB::Namespace->new(
             name     => 'KiokuDB',
@@ -47,47 +46,61 @@ has 'jsorb_namespace' => (
                             name        => 'lookup',
                             method_name => '_lookup',
                             spec        => [ 'Str' => 'HashRef' ]
+                        ),
+                        JSORB::Method->new(
+                            name        => 'root_set',
+                            method_name => '_root_set',
+                            spec        => [ 'Unit' => 'ArrayRef' ]
                         )
                     ]
                 )
             ]
-        );        
+        );
     },
 );
 
 sub _lookup {
     my $self = shift;
-    my $id   = shift || $self->root_id;
+    my $id   = shift || $self->root_id || die "No default root id assigned\n";
+
     my $obj  = $self->db->lookup($id);
+
     (defined $obj)
-        || confess "No object found for $id";
+        || die "No object found for $id\n";
+
     my $collapser = KiokuDB::Backend::Serialize::JSPON::Collapser->new;
+
     return $collapser->collapse_jspon(
         $self->db->live_objects->object_to_entry(
             $obj
         )
-    );    
+    );
+}
+
+sub _root_set {
+    my $self = shift;
+    my @root = $self->db->backend->root_entry_ids->all;
+    return \@root;
 }
 
 sub run {
     my $self = shift;
-    
+
     my $s = $self->db->new_scope;
-    
+
     JSORB::Server::Simple->new_with_traits(
         traits     => [
             'JSORB::Server::Traits::WithDebug',
             'JSORB::Server::Traits::WithStaticFiles',
             'JSORB::Server::Traits::WithInvocant',
         ],
-        invocant   => $self,        
+        invocant   => $self,
         doc_root   => $self->doc_root,
         dispatcher => JSORB::Dispatcher::Path->new_with_traits(
             traits    => [ 'JSORB::Dispatcher::Traits::WithInvocant' ],
             namespace => $self->jsorb_namespace,
         )
-
-    )->run;    
+    )->run;
 }
 
 no Moose; 1;
@@ -106,7 +119,7 @@ KiokuDB::Navigator - A Moosey solution to this problem
 
 =head1 DESCRIPTION
 
-=head1 METHODS 
+=head1 METHODS
 
 =over 4
 
@@ -116,7 +129,7 @@ KiokuDB::Navigator - A Moosey solution to this problem
 
 =head1 BUGS
 
-All complex software has bugs lurking in it, and this module is no 
+All complex software has bugs lurking in it, and this module is no
 exception. If you find a bug please either email me, or add the bug
 to cpan-RT.
 
