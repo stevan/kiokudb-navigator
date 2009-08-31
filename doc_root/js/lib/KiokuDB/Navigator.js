@@ -8,24 +8,13 @@ KiokuDB.Navigator = function (url) {
     });
 }
 
-KiokuDB.Navigator.prototype._abort_current_call = function () {
-    this._JSORB_CLIENT.abort_current_call();
-}
-
-KiokuDB.Navigator.prototype._call = function (method, callback) {
-    this._JSORB_CLIENT.call(method, callback)
-}
-
 KiokuDB.Navigator.prototype.lookup = function (id, callback) {
-    this._call(
+    this._JSORB_CLIENT.call(
         { method : 'lookup', params : [ id ] },
         callback
     )
 }
 
 KiokuDB.Navigator.prototype.load_root_set = function (callback) {
-    this._call(
-        { method : 'root_set' },
-        callback
-    );
+    this._JSORB_CLIENT.call( { method : 'root_set' }, callback );
 }
