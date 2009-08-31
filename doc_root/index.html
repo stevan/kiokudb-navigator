@@ -4,23 +4,24 @@
 <script language="javascript" src="js/jquery-1.2.6.js"></script>
 <script language="javascript" src="js/json2.js"></script>
 <script language="javascript" src="js/JSORB.js"></script>
+<script language="javascript" src="js/lib/KiokuDB.js"></script>
+<script language="javascript" src="js/lib/KiokuDB/Navigator.js"></script>
+<script language="javascript" src="js/lib/KiokuDB/Navigator/UI.js"></script>
 <script language="javascript">
 
-var c = new JSORB.Client ({
-    base_url       : 'http://localhost:9999/',
-    base_namespace : '/kiokudb/navigator/'
-});
+var nav = new KiokuDB.Navigator ('http://localhost:9999/');
 
-function lookup (id, callback) {
-    c.call(
-        { method : 'lookup', params : [ id ] },
-        callback
-    );
+function load_object (id) {
+    (new KiokuDB.Navigator.UI ({
+        'id'        : id,
+        'navigator' : nav
+    })).load_object(function (self) {
+        $(document.body).append( self.container );
+    });
 }
 
 function load_root_set (e) {
-    c.call(
-        { method : 'root_set' },
+    nav.load_root_set(
         function ( arr ) {
             var o = '<select id="root_set_select">';
             for (var i = 0; i < arr.length; i++) {
@@ -32,170 +33,9 @@ function load_root_set (e) {
     );
 }
 
-// utils ...
-
 function load_object_from_root_set () {
     var select = $('#root_set_select')[0];
-    load_object(undefined, select.options[ select.selectedIndex ].value);
-}
-
-function create_object_link (ref_id) {
-    if (ref_id.indexOf('.data') != -1) {
-        ref_id = ref_id.substring(0, ref_id.indexOf('.data'));
-    }
-    return '<a id="' + ref_id + '" class="loader" href="javascript:void(0)">'
-         + ref_id
-         + '</a><div class="sub_object hidden"></div>';
-}
-
-function is_ref_id (id) {
-    if (id.indexOf('-') == 8 && id.lastIndexOf('-') == 23) {
-        return true;
-    }
-    return false;
-}
-
-// This is the entry point for the
-// recursive object representation
-// functions
-
-function create_entity_repr (obj) {
-    var out = '';
-    if (obj.constructor == Array) {
-        // this will handle KiokuDB::Set objects
-        for (var i = 0; i < obj.length; i++) {
-            out += '<li>' + create_repr( obj[i] ) + '</li>';
-        }
-    }
-    else {
-        // this should handle everything else ...
-        for (var prop in obj) {
-            out += '<li><div class="label">' + prop + '</div><div class="value">';
-            out += create_repr(obj[prop]);
-            out += "</div></li>"
-        }
-    }
-    return out;
-}
-
-function create_repr (x) {
-    var out = '';
-    switch (x.constructor) {
-        case Object:
-            out += create_object_repr(x);
-            break;
-        case Array:
-            out += create_array_repr(x);
-            break;
-        case String:
-            // if we find a string which
-            // looks a lot like a ref then
-            // we make an assumption and
-            // just make it a link
-            if (is_ref_id(x)) {
-                out += create_object_link( x );
-            }
-            else {
-                out += x;
-            }
-            break;
-        default:
-            out += x;
-    }
-    return out;
-}
-
-function create_object_repr (obj) {
-    if (obj['$ref']) {
-        // we are assuming here that
-        // an object with a $ref key
-        // will be a jspon object and
-        // so be nothing more then a ref
-        return create_object_link( obj['$ref'] )
-    }
-    else {
-        var out = '<table class="hash">';
-        for (var prop in obj) {
-            out += "<tr>"
-                 + "<td valign='top' class='hash_key'>" + prop + "</td>"
-                 + "<td valign='top' class='fat_comma'>=></td>"
-                 + "<td valign='top' class='hash_value'>" + create_repr( obj[prop] ) + "</td>"
-                 + "</tr>";
-        }
-        out += '</table>';
-        return out;
-    }
-}
-
-function create_array_repr (arr) {
-    // IMPROVE ME:
-    // This could be made nicer,
-    // perhaps with scrolling if
-    // it is too long.
-    // - SL
-    var out = '<ul>';
-    for (var i = 0; i < arr.length; i++) {
-        out += '<li>' + create_repr( arr[i] ) + '</li>';
-    }
-    out += '</ul>';
-    return out;
-}
-
-function load_object (container, id) {
-
-    lookup(id, function (obj) {
-
-        var object_container = (
-             '<div class="object">'
-            +    '<div class="header">'
-            + (obj['__CLASS__'] == undefined
-                ? ('')
-                : ('<div class="__CLASS__">' + obj['__CLASS__'] + '</div>'))
-            +        '<div class="id">'  + (id == '' ? 'root' : id) +  '</div>'
-            +    '</div>'
-            +    '<div class="data">'
-            +        '<ul id="' + id + '"></ul>'
-            +    '</div>'
-            +'</div>'
-        );
-
-        if (container == undefined) {
-            container = $(
-                '<div class="window">'
-                +     '<div class="handle">'
-                +         '<a class="navigator_handle" href="#">[ _ ]</a>'
-                +         '&nbsp;'
-                +         '<a href="#" onclick="$(this).parent().parent().remove()">[ x ]</a>'
-                +     '</div>'
-                +     '<div class="body">'
-                +        object_container
-                +     '</div>'
-                + '</div>'
-            );
-            $(document.body).append(container);
-        }
-        else {
-            container.html(object_container);
-        }
-
-        $('.navigator_handle', container).toggle(
-            function () { $('.data', $(this).parent().parent()).hide() },
-            function () { $('.data', $(this).parent().parent()).show() }
-        );
-
-        $('.data ul', container).html( create_entity_repr( obj['data'] ) );
-
-        $('.loader', container).click(function () {
-            var id = $(this).attr('id');
-            load_object( $(this).siblings('.sub_object'), id );
-            $(this).siblings('.sub_object').removeClass('hidden');
-            $(this).unbind('click');
-            $(this).click(function () {
-                $(this).siblings('.sub_object').toggle()
-            });
-        })
-
-    });
+    load_object( select.options[ select.selectedIndex ].value );
 }
 
 
@@ -205,7 +45,7 @@ function load_object (container, id) {
 <table class="menu" cellspacing="5" border="0" width="100%">
 <tr>
 <td class="title"><span class="title_kioku">KiokuDB</span>Navigator</td>
-<td class="controls" width="33%"><input type="text" id="lookup" size="30" />&nbsp;<input type="button" value="lookup" onclick="load_object( undefined, $('#lookup').val() )" /></td>
+<td class="controls" width="33%"><input type="text" id="lookup" size="30" />&nbsp;<input type="button" value="lookup" onclick="load_object( $('#lookup').val() )" /></td>
 <td class="controls" width="33%" align="right"><input type="button" value="load root set" onclick="load_root_set(this)" /></td>
 </tr>
 </table>
