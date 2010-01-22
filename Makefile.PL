@@ -11,8 +11,9 @@ requires 'KiokuDB';
 requires 'KiokuDB::Cmd';
 requires 'JSORB';
 requires 'MooseX::Types::Path::Class';
-requires 'Class::Inspector';
+requires 'File::ShareDir';
 
+install_share;
 
 # things the tests need
 build_requires 'Test::More'      => '0.62';

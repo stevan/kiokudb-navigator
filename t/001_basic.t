@@ -93,5 +93,5 @@ my $db = KiokuDB->connect("hash");
 
 pass('... this is tricky to test');
 
-# KiokuDB::Navigator->new( db => $db )->run;
+# ok(KiokuDB::Navigator->new( db => $db )->run, '... horray, how did you like it?');
 

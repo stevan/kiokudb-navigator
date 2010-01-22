@@ -5,8 +5,11 @@ use MooseX::Types::Path::Class;
 our $VERSION   = '0.01';
 our $AUTHORITY = 'cpan:STEVAN';
 
-use Path::Class;
-use Class::Inspector;
+use Try::Tiny;
+use POSIX          ":sys_wait_h";
+use Path::Class    ();
+use File::ShareDir ();
+use Browser::Open  ();
 
 use JSORB;
 use JSORB::Dispatcher::Path;
@@ -28,11 +31,19 @@ has 'doc_root' => (
     coerce   => 1,
     lazy     => 1,
     default  => sub {
-        Path::Class::File->new(
-            Class::Inspector->loaded_filename( __PACKAGE__ )
-        )->parent # KiokuDB
-         ->parent # lib
-         ->parent->subdir('doc_root'),
+        try {
+            Path::Class::Dir->new(
+                File::ShareDir::dist_dir('KiokuDB-Navigator')
+            )
+        } catch {
+            # for development ..
+            require Class::Inspector;
+            Path::Class::File->new(
+                Class::Inspector->loaded_filename( __PACKAGE__ )
+            )->parent # KiokuDB
+             ->parent # lib
+             ->parent->subdir('share'),
+        };
     }
 );
 
@@ -86,11 +97,8 @@ sub _root_set {
     return \@root;
 }
 
-sub run {
+sub _create_server {
     my $self = shift;
-
-    my $s = $self->db->new_scope;
-
     JSORB::Server::Simple->new_with_traits(
         traits     => [
             'JSORB::Server::Traits::WithDebug',
@@ -103,7 +111,28 @@ sub run {
             traits    => [ 'JSORB::Dispatcher::Traits::WithInvocant' ],
             namespace => $self->jsorb_namespace,
         )
-    )->run;
+    )
+}
+
+sub run {
+    my $self = shift;
+
+    my $s   = $self->db->new_scope;
+    my $pid = $self->_create_server->background;
+
+    Browser::Open::open_browser('http://localhost:9999/index.html');
+
+    local $SIG{'INT'} = sub {
+        kill TERM => $pid;
+        exit(0);
+    };
+
+    my $x;
+    do {
+        $x = waitpid( $pid, WNOHANG );
+    } while $x != -1;
+
+    1;
 }
 
 no Moose; 1;
@@ -157,7 +186,7 @@ Stevan Little E<lt>stevan.little@iinteractive.comE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2008-2010 Infinity Interactive, Inc.
+Copyright 2009-2010 Infinity Interactive, Inc.
 
 L<http://www.iinteractive.com>
 
