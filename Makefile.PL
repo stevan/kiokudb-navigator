@@ -7,11 +7,11 @@ all_from 'lib/KiokuDB/Navigator.pm';
 license 'perl';
 
 # prereqs
-requires 'KiokuDB';
-requires 'KiokuDB::Cmd';
-requires 'JSORB';
-requires 'MooseX::Types::Path::Class';
-requires 'File::ShareDir';
+requires 'KiokuDB'                    => '0.34';
+requires 'KiokuDB::Cmd'               => '0.02';
+requires 'JSORB'                      => '0.04';
+requires 'MooseX::Types::Path::Class' => '0.05';
+requires 'File::ShareDir'             => '1.00';
 
 install_share;
 
