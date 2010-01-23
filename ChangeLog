@@ -1,4 +1,7 @@
 Revision history for Perl extension KiokuDB::Navigator
 
+0.02 Friday, Jan. 22, 2010
+    - forgot to add Browser::Open to the Makefile.PL
+
 0.01 Friday, Jan. 22, 2010
     - releasing module and seeing what happens

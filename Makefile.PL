@@ -12,6 +12,9 @@ requires 'KiokuDB::Cmd'               => '0.02';
 requires 'JSORB'                      => '0.04';
 requires 'MooseX::Types::Path::Class' => '0.05';
 requires 'File::ShareDir'             => '1.00';
+requires 'Browser::Open'              => '0.03';
+requires 'POSIX';
+requires 'Path::Class';
 
 install_share;
 

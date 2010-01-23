@@ -1,4 +1,4 @@
-KiokuDB::Navigator version 0.01
+KiokuDB::Navigator version 0.02
 ===========================
 
 See the individual module documentation for more information
@@ -20,7 +20,10 @@ This module requires these other modules and libraries:
     KiokuDB::Cmd
     JSORB
     MooseX::Types::Path::Class
-    Class::Inspector
+    File::ShareDir
+    Browser::Open
+    POSIX
+    Path::Class
 
 COPYRIGHT AND LICENCE
 
