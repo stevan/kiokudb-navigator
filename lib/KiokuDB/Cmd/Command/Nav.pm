@@ -3,7 +3,7 @@ use Moose;
 
 use KiokuDB::Navigator;
 
-our $VERSION   = '0.02';
+our $VERSION   = '0.03';
 our $AUTHORITY = 'cpan:STEVAN';
 
 extends 'KiokuDB::Cmd::Base';

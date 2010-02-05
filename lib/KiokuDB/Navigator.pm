@@ -2,7 +2,7 @@ package KiokuDB::Navigator;
 use Moose;
 use MooseX::Types::Path::Class;
 
-our $VERSION   = '0.02';
+our $VERSION   = '0.03';
 our $AUTHORITY = 'cpan:STEVAN';
 
 use Try::Tiny;
@@ -127,12 +127,9 @@ sub run {
         exit(0);
     };
 
-    my $x;
-    do {
-        $x = waitpid( $pid, WNOHANG );
-    } while $x != -1;
-
-    1;
+    # block waiting for the children to die
+    # or someone to throw the INT signal.
+    return if (my $x = CORE::wait()) < 0;
 }
 
 no Moose; 1;
