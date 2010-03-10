@@ -9,6 +9,7 @@ our $AUTHORITY = 'cpan:STEVAN';
 extends 'KiokuDB::Cmd::Base';
    with 'KiokuDB::Cmd::WithDSN::Read';
 
+# the classname of a typemap
 has typemap => (
     traits => [qw(Getopt)],
     isa => "Str",
