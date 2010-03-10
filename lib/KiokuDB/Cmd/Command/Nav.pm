@@ -9,12 +9,34 @@ our $AUTHORITY = 'cpan:STEVAN';
 extends 'KiokuDB::Cmd::Base';
    with 'KiokuDB::Cmd::WithDSN::Read';
 
+has typemap => (
+    traits => [qw(Getopt)],
+    isa => "Str",
+    is  => "ro",
+    predicate => "has_typemap",
+    cmd_aliases => "T",
+    documentation => "backend typemap",
+);
+
+sub _get_extra_arguments {
+    my $self = shift;
+    if ( $self->has_typemap ) {
+       my $class = $self->typemap;
+       Class::MOP::load_class( $class );
+       return ( typemap => $class->new );
+    } else {
+       return ();
+    }
+}
+
+
 augment 'run' => sub {
     my $self = shift;
 
     KiokuDB::Navigator->new(
         db => KiokuDB->new(
-            backend => $self->backend
+            backend => $self->backend,
+	    $self->_get_extra_arguments
         ),
     )->run;
 };
@@ -33,7 +55,7 @@ KiokuDB::Cmd::Command::Nav - KiokuDB::Cmd extension for KiokuDB::Navigator
 
 =head1 SYNOPSIS
 
-  % kioku nav --dsn bdb:dir=root/db
+  % kioku nav --dsn bdb:dir=root/db [ --typemap MyApp::TypeMap ]
 
 =head1 DESCRIPTION
 
