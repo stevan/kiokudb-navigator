@@ -111,10 +111,10 @@ KiokuDB.Navigator.UI.prototype.create_entity_repr = function (obj) {
         }
     }
     else {
-	// collapsed objects
-	out += '<li><div class="label">data</div><div class="value">';
-	out += this.create_repr( obj );
-	out += "</div></li>"
+        // collapsed objects
+        out += '<li><div class="label">data</div><div class="value">';
+        out += this.create_repr( obj );
+        out += "</div></li>"
     }
 
     return out;

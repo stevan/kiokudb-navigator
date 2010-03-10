@@ -37,7 +37,7 @@ augment 'run' => sub {
     KiokuDB::Navigator->new(
         db => KiokuDB->new(
             backend => $self->backend,
-	    $self->_get_extra_arguments
+            $self->_get_extra_arguments
         ),
     )->run;
 };
