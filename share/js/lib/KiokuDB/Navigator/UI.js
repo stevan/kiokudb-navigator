@@ -122,6 +122,9 @@ KiokuDB.Navigator.UI.prototype.create_entity_repr = function (obj) {
 
 KiokuDB.Navigator.UI.prototype.create_repr = function (x) {
     var out = '';
+    if (x === null) {
+        return "<span class='undef'>undef</span>";
+    }
     switch (x.constructor) {
         case Object:
             out += this.create_object_repr(x);
