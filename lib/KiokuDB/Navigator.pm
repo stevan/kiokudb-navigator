@@ -2,7 +2,7 @@ package KiokuDB::Navigator;
 use Moose;
 use MooseX::Types::Path::Class;
 
-our $VERSION   = '0.03';
+our $VERSION   = '0.04';
 our $AUTHORITY = 'cpan:STEVAN';
 
 use Try::Tiny;
